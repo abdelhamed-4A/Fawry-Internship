@@ -33,14 +33,16 @@ Check DNS servers:
 cat /etc/resolv.conf
 ```
 
+![Screenshot1](./assets/Screenshot1.jpg)
+
 ### ✅ 2. Diagnose Service Reachability
-If DNS returns an IP (e.g., 192.168.1.100):
 ```bash
-ping 192.168.1.100
-telnet 192.168.1.100 80
-curl http://192.168.1.100
+ping internal.example.com
+telnet internal.example.com
+curlinternal.example.com
 ss -tlnp | grep 80
 ```
+![Screenshot2](./assets/Screenshot2.jpg)
 
 - If IP is reachable but domain isn’t — ✅ DNS Problem.
 - If IP is unreachable — 🔥 Network Problem.
@@ -49,9 +51,9 @@ ss -tlnp | grep 80
 
 | 💡 Potential Issue                 | 🔍 How to Confirm | 🔄 Fix Command(s) |
 |:----------------------------------|:------------------------|:------------------------|
-| DNS server misconfigured          | `cat /etc/resolv.conf`   | `sudo echo "nameserver 192.168.1.10" > /etc/resolv.conf` |
-| DNS server down or unreachable    | `ping 192.168.1.10`      | `sudo systemctl restart named` |
-| Missing DNS records               | `dig @192.168.1.10 internal.example.com` | Add/correct A record in DNS server |
+| DNS server misconfigured          | `cat /etc/resolv.conf`   | `sudo echo "nameserver 172.25.250.9" > /etc/resolv.conf` |
+| DNS server down or unreachable    | `ping 172.25.250.9`      | `sudo systemctl restart named` |
+| Missing DNS records               | `dig @172.25.250.9 internal.example.com` | Add/correct A record in DNS server |
 | Local hosts file override         | `cat /etc/hosts | grep internal.example.com` | Correct/remove entry |
 | Network issues                    | `ping 192.168.1.1`       | Check firewalls, VLAN setup |
 | DNS cache issues                  | `sudo systemd-resolve --flush-caches` | Flush cache |
@@ -66,26 +68,35 @@ ss -tlnp | grep 80
 
 - **Temporarily edit `/etc/hosts`** to bypass DNS:
 ```bash
-sudo echo "192.168.1.100 internal.example.com" >> /etc/hosts
+sudo echo "172.25.250.9 internal.example.com" >> /etc/hosts
 curl http://internal.example.com
 ```
+![Screenshot3](./assets/Screenshot3.jpg)
 
 - **Persist DNS settings**:
     - Using `systemd-resolved`:
       ```bash
       sudo nano /etc/systemd/resolved.conf
-      # Add DNS=192.168.1.10
+      # Add DNS=172.25.250.9
       sudo systemctl restart systemd-resolved
       ```
     - Using `NetworkManager`:
       ```bash
-      nmcli con mod <connection_name> ipv4.dns 192.168.1.10
-      nmcli con up <connection_name>
+      nmcli connection show 
+      nmcli con mod "System eth0" ipv4.dns 172.25.250.9
+      nmcli con up "System eth0"
+      nmcli device show | grep IP4.DNS
       ```
+
+      ![Screenshot7](./assets/Screenshot7.jpg)
+
 - **✅ Test:**
 ```bash
 curl http://internal.example.com
 ```
+
+![Screenshot8](./assets/Screenshot8.jpg)
+
 ---
 
 # 📚 Full Diagnostic Flow for Internal Domain Resolution
@@ -105,13 +116,13 @@ curl http://internal.example.com
 ## 🛠️ Step 2: Confirm Network Reachability
 
 - Test ping:
-  - `ping 192.168.1.100`
+  - `ping 172.25.250.9`
 
 - Test HTTP access:
-  - `curl http://192.168.1.100`
+  - `curl http://172.25.250.9`
 
 - Test port with telnet:
-  - `telnet 192.168.1.100 80`
+  - `telnet 172.25.250.9 80`
 
 - Check if service is listening:
   - `ss -tlnp | grep 80`
