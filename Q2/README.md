@@ -39,7 +39,7 @@ cat /etc/resolv.conf
 ```bash
 ping internal.example.com
 telnet internal.example.com
-curlinternal.example.com
+curl internal.example.com
 ss -tlnp | grep 80
 ```
 ![Screenshot5](./assets/Screenshot5.jpg)
