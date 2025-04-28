@@ -42,7 +42,7 @@ telnet internal.example.com
 curlinternal.example.com
 ss -tlnp | grep 80
 ```
-![Screenshot2](./assets/Screenshot2.jpg)
+![Screenshot5](./assets/Screenshot5.jpg)
 
 - If IP is reachable but domain isn’t — ✅ DNS Problem.
 - If IP is unreachable — 🔥 Network Problem.
@@ -126,6 +126,8 @@ curl http://internal.example.com
 
 - Check if service is listening:
   - `ss -tlnp | grep 80`
+
+![Screenshot2](./assets/Screenshot2.jpg)
 
 ## 🛠️ Step 3: Identify Root Cause
 
